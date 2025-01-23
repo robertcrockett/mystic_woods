@@ -1,52 +1,71 @@
 using Godot;
 using System;
 
+public enum PlayerAnimations
+{
+	BackAttack,
+	BackIdle,
+	BackWalk,
+	Death,
+	FrontAttack,
+	FrontIdle,
+	FrontWalk,
+	SideAttack,
+	SideIdle,
+	SideWalk,
+	Walk
+}
+
 public partial class Player : CharacterBody2D
 {
-	public int Speed { get; set; } = 100; // How fast the player will move (pixels/sec).
+	public int Speed { get; set; } = 1000; // How fast the player will move (pixels/sec).
 
-	public override void _Process(double delta)
+	public override void _PhysicsProcess (double delta)
 	{
 		Vector2 velocity = Vector2.Zero; // The player's movement vector.
 
 		switch (true)
 		{
 			case bool _ when Input.IsActionPressed("move_right"):
+				Console.WriteLine("move_right");
+				PlayerAnimation(PlayerAnimations.SideWalk);
 				velocity.X = Speed;
 				velocity.Y = 0;
 				break;
 			case bool _ when Input.IsActionPressed("move_left"):
+				PlayerAnimation(PlayerAnimations.SideWalk);
 				velocity.X = -Speed;
 				velocity.Y = 0;
 				break;
 			case bool _ when Input.IsActionPressed("move_down"):
+				PlayerAnimation(PlayerAnimations.FrontWalk);
 				velocity.X = 0;
 				velocity.Y = Speed;
 				break;
 			case bool _ when Input.IsActionPressed("move_up"):
+				PlayerAnimation(PlayerAnimations.BackWalk);
 				velocity.X = 0;
 				velocity.Y = -Speed;
 				break;
 			default:
+				PlayerAnimation(PlayerAnimations.FrontIdle);
 				velocity.X = 0;
 				velocity.Y = 0;
 				break;
 		}
-
-		MoveAndSlide();
 		
-		 var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+		var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		
-		 if (velocity.Length() > 0)
-		 {
-		 	velocity = velocity.Normalized() * Speed;
-		 	animatedSprite2D.Play();
-		 }
-		 else
-		 {
-		 	animatedSprite2D.Stop();
-		 }
-		
+		if (velocity.Length() > 0)
+		{
+			velocity = velocity.Normalized() * Speed;
+			animatedSprite2D.Play();
+		}
+		else
+		{
+			animatedSprite2D.Stop();
+		}
+		//
 		// // Clamp the player inside the screen.
 		// Position += velocity * (float)delta;
 		// Position = new Vector2(
@@ -54,17 +73,50 @@ public partial class Player : CharacterBody2D
 		// 	y: Mathf.Clamp(Position.Y, 0, ScreenSize.Y)
 		// );
 		//
-		// if (velocity.X != 0)
-		// {
-		// 	animatedSprite2D.Animation = "walk";
-		// 	animatedSprite2D.FlipV = false;
-		// 	// See the note below about the following boolean assignment.
-		// 	animatedSprite2D.FlipH = velocity.X < 0;
-		// }
-		// else if (velocity.Y != 0)
-		// {
-		// 	animatedSprite2D.Animation = "up";
-		// 	animatedSprite2D.FlipV = velocity.Y > 0;
-		// }
+		
+		MoveAndSlide();
+	}
+	
+	
+	
+	private void PlayerAnimation(PlayerAnimations animation)
+	{
+		var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+		switch (animation)
+		{
+			case PlayerAnimations.FrontWalk:
+				animatedSprite2D.Animation = "front_walk";
+				break;
+			case PlayerAnimations.FrontAttack:
+				animatedSprite2D.Animation = "front_attack";
+				break;
+			case PlayerAnimations.SideIdle:
+				animatedSprite2D.Animation = "side_idle";
+				break;
+			case PlayerAnimations.SideWalk:
+				animatedSprite2D.Animation = "side_walk";
+				break;
+			case PlayerAnimations.SideAttack:
+				animatedSprite2D.Animation = "side_attack";
+				break;
+			case PlayerAnimations.BackIdle:
+				animatedSprite2D.Animation = "back_idle";
+				break;
+			case PlayerAnimations.BackWalk:
+				animatedSprite2D.Animation = "back_walk";
+				break;
+			case PlayerAnimations.BackAttack:
+				animatedSprite2D.Animation = "back_attack";
+				break;
+			case PlayerAnimations.Walk:
+				animatedSprite2D.Animation = "walk";
+				break;
+			case PlayerAnimations.Death:
+				animatedSprite2D.Animation = "death";
+				break;
+			default:
+				animatedSprite2D.Animation = "front_idle";
+				break;
+		}
 	}
 }
