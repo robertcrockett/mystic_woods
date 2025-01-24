@@ -18,22 +18,35 @@ public enum PlayerAnimations
 
 public partial class Player : CharacterBody2D
 {
-	public int Speed { get; set; } = 1000; // How fast the player will move (pixels/sec).
+	[Export]
+	public int Speed { get; set; } = DefaultSpeed; // How fast the player will move (pixels/sec).
 
+	private Vector2 _screenSize; // Size of the game window.
+	private const int DefaultSpeed = 150;
+	private const int ScreenPadding = 20;
+	
+	public override void _Ready()
+	{
+		_screenSize = GetViewportRect().Size;
+	}
+	
 	public override void _PhysicsProcess (double delta)
 	{
 		Vector2 velocity = Vector2.Zero; // The player's movement vector.
+		
+		var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 
 		switch (true)
 		{
 			case bool _ when Input.IsActionPressed("move_right"):
-				Console.WriteLine("move_right");
 				PlayerAnimation(PlayerAnimations.SideWalk);
+				animatedSprite2D.FlipH = false;
 				velocity.X = Speed;
 				velocity.Y = 0;
 				break;
 			case bool _ when Input.IsActionPressed("move_left"):
 				PlayerAnimation(PlayerAnimations.SideWalk);
+				animatedSprite2D.FlipH = true;
 				velocity.X = -Speed;
 				velocity.Y = 0;
 				break;
@@ -54,8 +67,6 @@ public partial class Player : CharacterBody2D
 				break;
 		}
 		
-		var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-		
 		if (velocity.Length() > 0)
 		{
 			velocity = velocity.Normalized() * Speed;
@@ -65,16 +76,17 @@ public partial class Player : CharacterBody2D
 		{
 			animatedSprite2D.Stop();
 		}
-		//
-		// // Clamp the player inside the screen.
-		// Position += velocity * (float)delta;
-		// Position = new Vector2(
-		// 	x: Mathf.Clamp(Position.X, 0, ScreenSize.X),
-		// 	y: Mathf.Clamp(Position.Y, 0, ScreenSize.Y)
-		// );
-		//
 		
-		MoveAndSlide();
+		// Move the player and slide along any colliding walls.
+		Position += velocity * (float)delta;
+		// Clamp the player inside the screen.
+		Position = new Vector2(
+			x: Mathf.Clamp(Position.X, 0, _screenSize.X),
+			y: Mathf.Clamp(Position.Y, 0, _screenSize.Y - 20)
+		);
+		
+		// TODO: Add when collisions are set up
+		//MoveAndSlide();
 	}
 	
 	
