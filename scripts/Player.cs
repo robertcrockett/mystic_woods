@@ -97,7 +97,6 @@ public partial class Player : CharacterBody2D
 
 	private void SetIdleAnimation()
 	{
-		Console.WriteLine($"Setting idle animation for direction: {_currentDirection}");
 		string idleAction = _currentDirection switch
 		{
 			Direction.Right => "face_right",
@@ -115,7 +114,6 @@ public partial class Player : CharacterBody2D
 	
 	private void MovePlayer(Vector2 velocity, double delta)
 	{
-		Console.WriteLine($"Velocity: {velocity}");
 		velocity = velocity.Normalized() * Speed;
 
 		_animatedSprite2D.Play();
