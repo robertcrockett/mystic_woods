@@ -1,5 +1,14 @@
-using Godot;
 using System;
+using System.Collections.Generic;
+using Godot;
+
+public enum Direction
+{
+	Left,
+	Right,
+	Up,
+	Down
+}
 
 public enum PlayerAnimations
 {
@@ -12,8 +21,7 @@ public enum PlayerAnimations
 	FrontWalk,
 	SideAttack,
 	SideIdle,
-	SideWalk,
-	Walk
+	SideWalk
 }
 
 public partial class Player : CharacterBody2D
@@ -28,110 +36,121 @@ public partial class Player : CharacterBody2D
 	// Private Variables
 	private Vector2 _screenSize; // Size of the game window.
 	private AnimatedSprite2D _animatedSprite2D;
+	private Direction _currentDirection;
 
+	private readonly Dictionary<string, (PlayerAnimations animation, Vector2 velocity, Direction direction)> _inputMappings = new()
+	{
+		// Animations when facing right
+		{ "move_right", (PlayerAnimations.SideWalk, new Vector2(1, 0), Direction.Right) },
+		{ "face_right", (PlayerAnimations.SideIdle, new Vector2(0, 0), Direction.Right) },
+		{ "attack_right", (PlayerAnimations.SideAttack, new Vector2(0, 0), Direction.Right) },
+		// Animations when facing left
+		{ "move_left", (PlayerAnimations.SideWalk, new Vector2(-1, 0), Direction.Left) },
+		{ "face_left", (PlayerAnimations.SideIdle, new Vector2(0, 0), Direction.Left) },
+		{ "attack_left", (PlayerAnimations.SideAttack, new Vector2(0, 0), Direction.Left) },
+		// Animations when facing down
+		{ "move_down", (PlayerAnimations.FrontWalk, new Vector2(0, 1), Direction.Down) },
+		{ "face_down", (PlayerAnimations.FrontIdle, new Vector2(0, 0), Direction.Down) },
+		{ "attack_down", (PlayerAnimations.FrontAttack, new Vector2(0, 0), Direction.Down) },
+		// Animations when facing up
+		{ "move_up", (PlayerAnimations.BackWalk, new Vector2(0, -1), Direction.Up) },
+		{ "face_up", (PlayerAnimations.BackIdle, new Vector2(0, 0), Direction.Up) },
+		{ "attack_up", (PlayerAnimations.BackAttack, new Vector2(0, 0), Direction.Up) },
+		// Death Animation
+		{ "death", (PlayerAnimations.Death, new Vector2(0, 0), Direction.Down) },
+	};
 	
 	public override void _Ready()
 	{
 		_screenSize = GetViewportRect().Size;
 		_animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+		_currentDirection = Direction.Down;
 	}
 	
 	public override void _PhysicsProcess (double delta)
 	{
 		Vector2 velocity = Vector2.Zero; // The player's movement vector.
-		
-		switch (true)
-		{
-			case bool _ when Input.IsActionPressed("move_right"):
-				PlayerAnimation(PlayerAnimations.SideWalk);
-				_animatedSprite2D.FlipH = false;
-				velocity.X = Speed;
-				velocity.Y = 0;
-				break;
-			case bool _ when Input.IsActionPressed("move_left"):
-				PlayerAnimation(PlayerAnimations.SideWalk);
-				_animatedSprite2D.FlipH = true;
-				velocity.X = -Speed;
-				velocity.Y = 0;
-				break;
-			case bool _ when Input.IsActionPressed("move_down"):
-				PlayerAnimation(PlayerAnimations.FrontWalk);
-				velocity.X = 0;
-				velocity.Y = Speed;
-				break;
-			case bool _ when Input.IsActionPressed("move_up"):
-				PlayerAnimation(PlayerAnimations.BackWalk);
-				velocity.X = 0;
-				velocity.Y = -Speed;
-				break;
-			default:
-				PlayerAnimation(PlayerAnimations.FrontIdle);
-				velocity.X = 0;
-				velocity.Y = 0;
-				break;
-		}
-		
-		if (velocity.Length() > 0)
-		{
-			velocity = velocity.Normalized() * Speed;
-			_animatedSprite2D.Play();
-		}
-		else
-		{
-			_animatedSprite2D.Stop();
-		}
-		
-		// Move the player and slide along any colliding walls.
-		Position += velocity * (float)delta;
-		// Clamp the player inside the screen.
-		Position = new Vector2(
-			x: Mathf.Clamp(Position.X, 0, _screenSize.X),
-			y: Mathf.Clamp(Position.Y, 0, _screenSize.Y - ScreenPadding)
-		);
-		
+
+		velocity = HandleInput();
+		MovePlayer(velocity, delta);
+
 		// TODO: Add when collisions are set up
 		//MoveAndSlide();
 	}
 	
+	private Vector2 HandleInput()
+	{
+		foreach (var inputMapping in _inputMappings)
+		{
+			if (InputMap.HasAction(inputMapping.Key) && Input.IsActionPressed(inputMapping.Key))
+			{
+				_currentDirection = inputMapping.Value.direction;
+				PlayerAnimation(inputMapping.Value.animation);
+				_animatedSprite2D.FlipH = inputMapping.Key == "move_left";
+				return inputMapping.Value.velocity;
+			}
+		}
+
+		SetIdleAnimation();
+		return Vector2.Zero;
+	}
+
+	private void SetIdleAnimation()
+	{
+		Console.WriteLine($"Setting idle animation for direction: {_currentDirection}");
+		string idleAction = _currentDirection switch
+		{
+			Direction.Right => "face_right",
+			Direction.Left => "face_left",
+			Direction.Down => "face_down",
+			Direction.Up => "face_up",
+			_ => "face_down"
+		};
+
+		if (_inputMappings.TryGetValue(idleAction, out var idleMapping))
+		{
+			PlayerAnimation(idleMapping.animation);
+		}
+	}
 	
+	private void MovePlayer(Vector2 velocity, double delta)
+	{
+		Console.WriteLine($"Velocity: {velocity}");
+		velocity = velocity.Normalized() * Speed;
+
+		_animatedSprite2D.Play();
+		Position += velocity * (float)delta;
+		
+		// Clamp the player inside the screen.
+		ClampPlayerToScreen();
+	}
+
+	/// <summary>
+	/// Ensures that the player does not move off the screen. Updates the player's
+	/// position if they do.
+	/// </summary>
+	private void ClampPlayerToScreen()
+	{
+		Position = new Vector2(
+			x: Mathf.Clamp(Position.X, 0, _screenSize.X),
+			y: Mathf.Clamp(Position.Y, 0, _screenSize.Y - ScreenPadding)
+		);
+	}
 	
 	private void PlayerAnimation(PlayerAnimations animation)
 	{
-		switch (animation)
+		_animatedSprite2D.Animation = animation switch
 		{
-			case PlayerAnimations.FrontWalk:
-				_animatedSprite2D.Animation = "front_walk";
-				break;
-			case PlayerAnimations.FrontAttack:
-				_animatedSprite2D.Animation = "front_attack";
-				break;
-			case PlayerAnimations.SideIdle:
-				_animatedSprite2D.Animation = "side_idle";
-				break;
-			case PlayerAnimations.SideWalk:
-				_animatedSprite2D.Animation = "side_walk";
-				break;
-			case PlayerAnimations.SideAttack:
-				_animatedSprite2D.Animation = "side_attack";
-				break;
-			case PlayerAnimations.BackIdle:
-				_animatedSprite2D.Animation = "back_idle";
-				break;
-			case PlayerAnimations.BackWalk:
-				_animatedSprite2D.Animation = "back_walk";
-				break;
-			case PlayerAnimations.BackAttack:
-				_animatedSprite2D.Animation = "back_attack";
-				break;
-			case PlayerAnimations.Walk:
-				_animatedSprite2D.Animation = "walk";
-				break;
-			case PlayerAnimations.Death:
-				_animatedSprite2D.Animation = "death";
-				break;
-			default:
-				_animatedSprite2D.Animation = "front_idle";
-				break;
-		}
+			PlayerAnimations.FrontWalk => "front_walk",
+			PlayerAnimations.FrontAttack => "front_attack",
+			PlayerAnimations.SideIdle => "side_idle",
+			PlayerAnimations.SideWalk => "side_walk",
+			PlayerAnimations.SideAttack => "side_attack",
+			PlayerAnimations.BackIdle => "back_idle",
+			PlayerAnimations.BackWalk => "back_walk",
+			PlayerAnimations.BackAttack => "back_attack",
+			PlayerAnimations.Death => "death",
+			_ => "front_idle"
+		};
 	}
 }
