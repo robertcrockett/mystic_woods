@@ -65,6 +65,10 @@ public partial class Player : CharacterBody2D
 		_screenSize = GetViewportRect().Size;
 		_animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_currentDirection = Direction.Down;
+		
+		// Initialize the player's animation
+		PlayerAnimation(PlayerAnimations.FrontIdle);
+		_animatedSprite2D.Play();
 	}
 	
 	public override void _PhysicsProcess (double delta)
@@ -165,6 +169,7 @@ public partial class Player : CharacterBody2D
 	{
 		_animatedSprite2D.Animation = animation switch
 		{
+			PlayerAnimations.FrontIdle => "front_idle",
 			PlayerAnimations.FrontWalk => "front_walk",
 			PlayerAnimations.FrontAttack => "front_attack",
 			PlayerAnimations.SideIdle => "side_idle",
