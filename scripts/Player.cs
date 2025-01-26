@@ -80,19 +80,45 @@ public partial class Player : CharacterBody2D
 	
 	private Vector2 HandleInput()
 	{
+		// Write out the action presseds to the console
 		foreach (var inputMapping in _inputMappings)
 		{
-			if (InputMap.HasAction(inputMapping.Key) && Input.IsActionPressed(inputMapping.Key))
+			if (!InputMap.HasAction(inputMapping.Key) || !Input.IsActionPressed(inputMapping.Key))
 			{
-				_currentDirection = inputMapping.Value.direction;
-				PlayerAnimation(inputMapping.Value.animation);
-				_animatedSprite2D.FlipH = inputMapping.Key == "move_left";
-				return inputMapping.Value.velocity;
+				continue;
 			}
+
+			if (inputMapping.Key.StartsWith("attack"))
+			{
+				HandleAttackInput();
+				return Vector2.Zero; // Attack does not change position
+			}
+
+			_currentDirection = inputMapping.Value.direction;
+			PlayerAnimation(inputMapping.Value.animation);
+			_animatedSprite2D.FlipH = inputMapping.Key == "move_left";
+			return inputMapping.Value.velocity;
 		}
 
 		SetIdleAnimation();
 		return Vector2.Zero;
+	}
+
+	private void HandleAttackInput()
+	{
+		string attackAction = _currentDirection switch
+		{
+			Direction.Right => "attack_right",
+			Direction.Left => "attack_left",
+			Direction.Down => "attack_down",
+			Direction.Up => "attack_up",
+			_ => "attack_down"
+		};
+
+		if (_inputMappings.TryGetValue(attackAction, out var attackMapping))
+		{
+			PlayerAnimation(attackMapping.animation);
+		}
 	}
 
 	private void SetIdleAnimation()
