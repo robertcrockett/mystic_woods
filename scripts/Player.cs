@@ -148,6 +148,7 @@ public partial class Player : CharacterBody2D
 
 		_animatedSprite2D.Play();
 		Position += velocity * (float)delta;
+		MoveAndSlide();
 		
 		// Clamp the player inside the screen.
 		ClampPlayerToScreen();
