@@ -414,18 +414,18 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mnjsy"]
-radius = 6.0
+radius = 4.0
 
 [node name="player" type="CharacterBody2D"]
 position = Vector2(50, 50)
 script = ExtResource("1_llgq1")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_ddgbd")
-animation = &"front_attack"
-frame = 3
-frame_progress = 0.826963
+animation = &"side_walk"
+offset = Vector2(0, -15)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 13)
+position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_mnjsy")
