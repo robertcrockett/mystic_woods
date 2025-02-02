@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=4 uid="uid://bjyy56cy3dqsv"]
+[gd_scene load_steps=10 format=4 uid="uid://bjyy56cy3dqsv"]
 
 [ext_resource type="Texture2D" uid="uid://dnu77xwjp48yi" path="res://art/tilesets/plains.png" id="1_gs1n8"]
 [ext_resource type="Texture2D" uid="uid://ckmvk6yfpa28w" path="res://art/tilesets/grass.png" id="2_kmgsh"]
 [ext_resource type="Texture2D" uid="uid://cuuoprmvbfmgs" path="res://art/objects/objects.png" id="3_bctfb"]
 [ext_resource type="PackedScene" uid="uid://dm22p8ephg1xf" path="res://scenes/player.tscn" id="4_a17lw"]
+[ext_resource type="PackedScene" uid="uid://cccay8m2bk6g3" path="res://scenes/slime.tscn" id="5_woeyq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_du01x"]
 texture = ExtResource("1_gs1n8")
@@ -100,3 +101,13 @@ tile_set = SubResource("TileSet_45j4l")
 
 [node name="player" parent="." instance=ExtResource("4_a17lw")]
 y_sort_enabled = true
+position = Vector2(64, 101)
+
+[node name="slime" parent="." instance=ExtResource("5_woeyq")]
+position = Vector2(382, 72)
+
+[node name="slime2" parent="." instance=ExtResource("5_woeyq")]
+position = Vector2(111, 171)
+
+[node name="slime3" parent="." instance=ExtResource("5_woeyq")]
+position = Vector2(237, 47)
