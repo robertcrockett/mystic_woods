@@ -1,5 +1,6 @@
-[gd_scene load_steps=38 format=3 uid="uid://cccay8m2bk6g3"]
+[gd_scene load_steps=41 format=3 uid="uid://cccay8m2bk6g3"]
 
+[ext_resource type="Script" path="res://scripts/Slime.cs" id="1_5f6hs"]
 [ext_resource type="Texture2D" uid="uid://p46wi85hcyyv" path="res://art/characters/slime.png" id="1_x0yiv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nh8m8"]
@@ -285,12 +286,33 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_imhhq"]
+radius = 46.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5k86x"]
+radius = 5.09902
+
 [node name="slime" type="CharacterBody2D"]
+script = ExtResource("1_5f6hs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ofvas")
-animation = &"death"
-frame = 3
-frame_progress = 0.602176
+animation = &"side_idle"
+frame_progress = 0.108333
+offset = Vector2(0, -6)
+
+[node name="detection_area" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="detection_collision" type="CollisionShape2D" parent="detection_area"]
+shape = SubResource("CircleShape2D_imhhq")
+
+[node name="environment_collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("CircleShape2D_5k86x")
+
+[connection signal="body_entered" from="detection_area" to="." method="OnDetectionAreaBodyEntered"]
+[connection signal="body_exited" from="detection_area" to="." method="OnDetectionAreaBodyExited"]

@@ -62,7 +62,7 @@ public partial class Player : CharacterBody2D
 	
 	public override void _Ready()
 	{
-		// Initalize the player's variables
+		// Initialize the player's variables
 		_screenSize = GetViewportRect().Size;
 		_animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_currentDirection = Direction.Down;
