@@ -16,8 +16,8 @@ public enum SlimeAnimations
 public partial class Slime : CharacterBody2D
 {
 	private const float Speed = 35.0f;
-	private bool _chasePlayer = false;
-	private Player _player = null;
+	private bool _chasePlayer;
+	private Player _player;
 	
 	private AnimatedSprite2D _animatedSprite2D;
 	private Direction _currentDirection;
@@ -63,13 +63,13 @@ public partial class Slime : CharacterBody2D
 		MoveAndSlide();
 	}
 
-	public void OnDetectionAreaBodyEntered(Player body)
+	private void OnDetectionAreaBodyEntered(Player body)
 	{
 		_chasePlayer = true;
 		_player = body;
 	}
 
-	public void OnDetectionAreaBodyExited(Player body)
+	private void OnDetectionAreaBodyExited(Player body)
 	{
 		_chasePlayer = false;
 		_player = null;
