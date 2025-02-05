@@ -300,7 +300,7 @@ script = ExtResource("1_5f6hs")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ofvas")
 animation = &"side_idle"
-frame_progress = 0.108333
+frame_progress = 0.420411
 offset = Vector2(0, -6)
 
 [node name="detection_area" type="Area2D" parent="."]
