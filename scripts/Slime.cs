@@ -59,10 +59,11 @@ public partial class Slime : CharacterBody2D
 		// Set the animation based on the velocity
 		SetAnimationBasedOnDirection(velocity);
 		
+		// Handle collisions to prevent getting stuck
 		Velocity = velocity;
 		MoveAndSlide();
 	}
-
+	
 	private void OnDetectionAreaBodyEntered(Player body)
 	{
 		_chasePlayer = true;
