@@ -78,9 +78,6 @@ public partial class Player : CharacterBody2D
 
 		velocity = HandleInput();
 		MovePlayer(velocity, delta);
-
-		// TODO: Add when collisions are set up
-		//MoveAndSlide();
 	}
 	
 	private Vector2 HandleInput()
@@ -152,7 +149,7 @@ public partial class Player : CharacterBody2D
 		MoveAndSlide();
 		
 		// Clamp the player inside the screen.
-		ClampPlayerToScreen();
+		//ClampPlayerToScreen();
 	}
 
 	/// <summary>

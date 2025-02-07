@@ -15,7 +15,7 @@ public enum SlimeAnimations
 
 public partial class Slime : CharacterBody2D
 {
-	private const float Speed = 35.0f;
+	private const float Speed = 40.0f;
 	private bool _chasePlayer;
 	private Player _player;
 	
@@ -61,7 +61,22 @@ public partial class Slime : CharacterBody2D
 		
 		// Handle collisions to prevent getting stuck
 		Velocity = velocity;
-		MoveAndSlide();
+		
+		bool hasCollidedWithPlayer = false;
+		for (int i = 0; i < GetSlideCollisionCount(); i++)
+		{
+			KinematicCollision2D collision = GetSlideCollision(i);
+			if (collision.GetCollider() is Player)
+			{
+				hasCollidedWithPlayer = true;
+				break;
+			}
+		}
+
+		if (!hasCollidedWithPlayer && velocity != Vector2.Zero && _player != null)
+		{
+			Position += (_player.GlobalPosition - GlobalPosition) / Speed;
+		}
 	}
 	
 	private void OnDetectionAreaBodyEntered(Player body)
