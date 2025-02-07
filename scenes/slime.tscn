@@ -311,7 +311,7 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_imhhq")
 
 [node name="environment_collision" type="CollisionShape2D" parent="."]
-position = Vector2(0, -3)
+position = Vector2(0, -4)
 shape = SubResource("CircleShape2D_5k86x")
 
 [connection signal="body_entered" from="detection_area" to="." method="OnDetectionAreaBodyEntered"]
