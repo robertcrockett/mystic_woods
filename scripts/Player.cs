@@ -74,10 +74,13 @@ public partial class Player : CharacterBody2D
 	
 	public override void _PhysicsProcess (double delta)
 	{
-		Vector2 velocity = Vector2.Zero; // The player's movement vector.
+		Vector2 velocity = HandleInput();
 
-		velocity = HandleInput();
-		MovePlayer(velocity, delta);
+		// Reset velocity to zero if no input is detected
+		if (velocity != Vector2.Zero)
+		{
+			MovePlayer(velocity, delta);
+		}
 	}
 	
 	private Vector2 HandleInput()
