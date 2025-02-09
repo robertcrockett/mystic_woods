@@ -75,7 +75,11 @@ public partial class Slime : CharacterBody2D
 
 		if (!hasCollidedWithPlayer && velocity != Vector2.Zero && _player != null)
 		{
-			Position += (_player.GlobalPosition - GlobalPosition) / Speed;
+			MoveAndSlide();
+		}
+		else
+		{
+			Velocity = Vector2.Zero;
 		}
 	}
 	
