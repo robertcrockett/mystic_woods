@@ -73,13 +73,9 @@ public partial class Slime : CharacterBody2D
 			}
 		}
 
-		if (!hasCollidedWithPlayer && velocity != Vector2.Zero && _player != null)
+		if (!hasCollidedWithPlayer && _player != null)
 		{
 			MoveAndSlide();
-		}
-		else
-		{
-			Velocity = Vector2.Zero;
 		}
 	}
 	
