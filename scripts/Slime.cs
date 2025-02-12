@@ -52,9 +52,11 @@ public partial class Slime : CharacterBody2D
 	}
 	public override void _PhysicsProcess(double delta)
 	{
+		// Reset the collision flag at the beginning of each call
+		bool hasCollidedWithPlayer = false;
+		
 		// If _chasePlayer is true and _player is not null, set the velocity to chase the player, otherwise set the velocity to zero
 		Vector2 velocity = _chasePlayer && _player != null ? GetChaseVelocity() : Vector2.Zero;
-		Console.WriteLine("Velocity: " + velocity);
 		
 		// Set the animation based on the velocity
 		SetAnimationBasedOnDirection(velocity);
@@ -62,7 +64,6 @@ public partial class Slime : CharacterBody2D
 		// Handle collisions to prevent getting stuck
 		Velocity = velocity;
 		
-		bool hasCollidedWithPlayer = false;
 		for (int i = 0; i < GetSlideCollisionCount(); i++)
 		{
 			KinematicCollision2D collision = GetSlideCollision(i);
@@ -72,11 +73,13 @@ public partial class Slime : CharacterBody2D
 				break;
 			}
 		}
-
+		
 		if (!hasCollidedWithPlayer && _player != null)
 		{
 			MoveAndSlide();
 		}
+
+		MoveAndSlide();
 	}
 	
 	private void OnDetectionAreaBodyEntered(Player body)
@@ -118,7 +121,6 @@ public partial class Slime : CharacterBody2D
 		string action = velocity == Vector2.Zero ? GetIdleAction() : GetMoveAction();
 		if (_slimeMappings.TryGetValue(action, out var mapping))
 		{
-			Console.WriteLine("Action: " + action);
 			SlimeAnimation(mapping.animation);
 			_animatedSprite2D.FlipH = action == "move_left" || action == "face_left";
 		}
