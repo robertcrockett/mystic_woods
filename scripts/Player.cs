@@ -37,6 +37,10 @@ public partial class Player : CharacterBody2D
 	private Vector2 _screenSize; // Size of the game window.
 	private AnimatedSprite2D _animatedSprite2D;
 	private Direction _currentDirection;
+	private bool _isEnemyInAttackRange;
+	private bool _isEnemyAttackCooldown;
+	private int _health = 100;
+	private bool _isAlive = true;
 
 	private readonly Dictionary<string, (PlayerAnimations animation, Vector2 velocity, Direction direction)> _inputMappings = new()
 	{
@@ -183,5 +187,21 @@ public partial class Player : CharacterBody2D
 			PlayerAnimations.Death => "death",
 			_ => "front_idle"
 		};
+	}
+	
+	private void OnPlayerHitboxBodyEntered(Node2D body)
+	{
+		if (body is Slime slime)
+		{
+			_isEnemyInAttackRange = true;
+		}
+	}
+	
+	private void OnPlayerHitboxBodyExited(Node2D body)
+	{
+		if (body is Slime slime)
+		{
+			_isEnemyInAttackRange = false;
+		}
 	}
 }
