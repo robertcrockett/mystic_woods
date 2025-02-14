@@ -104,10 +104,10 @@ y_sort_enabled = true
 position = Vector2(64, 101)
 
 [node name="slime" parent="." instance=ExtResource("5_woeyq")]
-position = Vector2(125, 108)
+position = Vector2(181, 89)
 
 [node name="slime2" parent="." instance=ExtResource("5_woeyq")]
 position = Vector2(307, 100)
 
 [node name="slime3" parent="." instance=ExtResource("5_woeyq")]
-position = Vector2(224, 171)
+position = Vector2(114, 168)

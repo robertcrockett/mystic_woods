@@ -82,18 +82,24 @@ public partial class Slime : CharacterBody2D
 		MoveAndSlide();
 	}
 	
-	private void OnDetectionAreaBodyEntered(Player body)
+	private void OnDetectionAreaBodyEntered(Node2D body)
 	{
-		_chasePlayer = true;
-		_player = body;
+		if(body is Player player)
+		{
+			_chasePlayer = true;
+			_player = player;
+		}
 	}
 
-	private void OnDetectionAreaBodyExited(Player body)
+	private void OnDetectionAreaBodyExited(Node2D body)
 	{
-		_chasePlayer = false;
-		_player = null;
+		if (body is Player player)
+		{
+			_chasePlayer = false;
+			_player = null;
+		}
 	}
-	
+
 	private Vector2 GetChaseVelocity()
 	{
 		return (_player.GlobalPosition - GlobalPosition).Normalized() * Speed;

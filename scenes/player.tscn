@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://dm22p8ephg1xf"]
+[gd_scene load_steps=57 format=3 uid="uid://dm22p8ephg1xf"]
 
 [ext_resource type="Script" path="res://scripts/Player.cs" id="1_llgq1"]
 [ext_resource type="Texture2D" uid="uid://bq8xnfpjisb00" path="res://art/characters/player.png" id="2_ipybh"]
@@ -416,6 +416,9 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_mnjsy"]
 radius = 4.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_dwowj"]
+radius = 15.0
+
 [node name="player" type="CharacterBody2D"]
 position = Vector2(50, 50)
 collision_layer = 3
@@ -431,3 +434,12 @@ offset = Vector2(0, -15)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_mnjsy")
+
+[node name="player_hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player_hitbox"]
+position = Vector2(0, -8)
+shape = SubResource("CircleShape2D_dwowj")
+
+[connection signal="body_entered" from="player_hitbox" to="." method="OnPlayerHitboxBodyEntered"]
+[connection signal="body_exited" from="player_hitbox" to="." method="OnPlayerHitboxBodyExited"]
